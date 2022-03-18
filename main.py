@@ -1,7 +1,10 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter import ttk
+from tkinter import messagebox
 from Analizador import AnalizadorLexico
+from os import system, startfile
+ComprobacionCarga = False
 
 
 def CargarArchivo():
@@ -16,19 +19,38 @@ def CargarArchivo():
     Entrada.delete(1.0,END)
     Entrada.insert(1.0,ArchivoEntrada)
 
-def AnalizarArchivo():
-    lexico = AnalizadorLexico()
-    lexico.analizar(Entrada.get())
 
+def AnalizarArchivo():
+    global ComprobacionCarga
+    lexico = AnalizadorLexico()
+    ArchivoAnalizar= Entrada.get("1.0",END)
+    lexico.AnalizadorLexico(ArchivoAnalizar)
+    lexico.generarHtml()
+    lexico.imprimirTokens()
+    lexico.imprimirErrores()
+    ComprobacionCarga = True
+
+    
 def callbackFunc(event):
+    global ComprobacionCarga
+    lexico = AnalizadorLexico()
     if listasReportes.get() == "Reporte de Tokens":
-        print("hi")
+        if ComprobacionCarga == True:
+            lexico.reporteTokens()
+        else:
+            messagebox.showinfo(message="No ha analizado el archivo", title="Error")
+
     elif listasReportes.get() == "Reporte de Errores":
-        print("hi 2")
+        if ComprobacionCarga == True:
+            lexico.reporteErrores()
+        else:
+            messagebox.showinfo(message="No ha analizado el archivo", title="Error")
+
     elif listasReportes.get() == "Manual de Usuario":
-        print("hi3")
+        startfile('Documentación\ManualUsuario.pdf')
+
     elif listasReportes.get() == "Manual Técnico":
-        print("hi4")
+        startfile('Documentacion\ManualTecnico.pdf')
 
 VentanaPrincipal = Tk()
 VentanaPrincipal.geometry("1200x600")
