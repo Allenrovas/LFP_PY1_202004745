@@ -28,26 +28,22 @@ def AnalizarArchivo():
     lexico.generarHtml()
     lexico.imprimirTokens()
     lexico.imprimirErrores()
-    ComprobacionCarga = True
+    
 
     
 def callbackFunc(event):
     global ComprobacionCarga
     lexico = AnalizadorLexico()
+    ArchivoAnalizar= Entrada.get("1.0",END)
+    lexico.AnalizadorLexico(ArchivoAnalizar)
     if listasReportes.get() == "Reporte de Tokens":
-        if ComprobacionCarga == True:
-            lexico.reporteTokens()
-        else:
-            messagebox.showinfo(message="No ha analizado el archivo", title="Error")
+        lexico.reporteTokens()
 
     elif listasReportes.get() == "Reporte de Errores":
-        if ComprobacionCarga == True:
-            lexico.reporteErrores()
-        else:
-            messagebox.showinfo(message="No ha analizado el archivo", title="Error")
+        lexico.reporteErrores()
 
     elif listasReportes.get() == "Manual de Usuario":
-        startfile('Documentación\ManualUsuario.pdf')
+        startfile('Documentacion\ManualUsuario.pdf')
 
     elif listasReportes.get() == "Manual Técnico":
         startfile('Documentacion\ManualTecnico.pdf')

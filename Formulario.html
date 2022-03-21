@@ -31,6 +31,18 @@
         </head>
         <body>
         <div align="center" class="topnav"> 
-            <h1 style = "color: black; ">Formulario</h1></div><br></br></div>
+            <h1 style = "color: black; ">Formulario</h1></div><br></br><form><div class="mb-3" align="center">
+                                    <label for=Nombre class="form-label">Nombre</label></div><div class="mb-3" align="center">
+                                    <input type="text" class="form-control" id="Nombre"placeholder="Ingrese nombre"></div><div class="mb-3" align="center">
+                                    <p>sexo:</p><p>'Masculino'<input type="radio" name="sexo" /><br />'Femenino'<input type="radio" name="sexo" /><br /></p></div><div class="mb-3" align="center">
+                                    <p>pais:</p><p><select><option>'Guatemala'</option><option>'El Salvador'</option><option>'Honduras'</option></select></p></div><div class="mb-3" align="center">
+                                <button onclick="Valor()" id="Valor"type="submit" class="btn btn-outline-dark">Valor</button></form></div><iframe id="iframeValor"> </iframe>
+                    <script>
+                        var sendBtn = document.getElementById("Valor");var frame = document.getElementById('iframeValor')
+                        sendBtn.addEventListener('click', (event) => {
+                            frame.innerHTML = 
+})</script>
+</form>
+</div>
         </body>
         </html>

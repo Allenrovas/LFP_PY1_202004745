@@ -5,6 +5,7 @@ from Atributos import Atributos
 from os import system, startfile
 
 ListaAtributos = []
+Entrada1 = ''
 
 class AnalizadorLexico:
 
@@ -18,6 +19,7 @@ class AnalizadorLexico:
         self.i = 0
     
     def AnalizadorLexico(self, Entrada):
+        global Entrada1
         global ListaAtributos
         self.listaTokens = []
         self.listaErrores = []
@@ -31,6 +33,7 @@ class AnalizadorLexico:
         centinela = '¬'
         estado = 0
         Entrada += centinela
+        Entrada1 = Entrada
 
         i = 0
         while i< len(Entrada):
@@ -77,7 +80,9 @@ class AnalizadorLexico:
                             fondo = ListaAuxiliar2[j]
                         elif ListaAuxiliar[j] == "nombre":
                             nombre = ListaAuxiliar2[j]
-                        elif ListaAuxiliar[j] == "evento":
+                        elif ListaAuxiliar[j] == "info":
+                            evento = ListaAuxiliar[j]
+                        elif ListaAuxiliar[j] == "entrada":
                             evento = ListaAuxiliar[j]
 
                         j += 1
@@ -178,14 +183,16 @@ class AnalizadorLexico:
                         self.listaTokens.append(Token(buffer, 'formulario', linea, columna))
                     elif buffer == 'info':
                         self.listaTokens.append(Token(buffer, 'info', linea, columna))
+                        ListaAuxiliar.append(buffer)
                     elif buffer == 'entrada':
-                            self.listaTokens.append(Token(buffer, 'entrada', linea, columna))    
+                        self.listaTokens.append(Token(buffer, 'entrada', linea, columna))
+                        ListaAuxiliar.append(buffer)    
                     i -= 1
                     estado = 0
                     buffer = ''
             i += 1
         for objeto in ListaAtributos:
-            print(objeto.tipo,objeto.valor,objeto.fondo,objeto.nombre,objeto.valores)
+            print(objeto.tipo,objeto.valor,objeto.fondo,objeto.nombre,objeto.valores,objeto.evento)
 
     def imprimirTokens(self):
         '''Imprime una tabla con los tokens'''
@@ -328,6 +335,11 @@ class AnalizadorLexico:
         print("Se ha generado el html con los reportes.")
     
     def generarHtml(self):
+        global ListaAtributos
+        global Entrada1
+        ListaAtributos.pop(0)
+        ListaAtributos.pop(0)
+        ListaAtributos.pop()
         CuerpoHtml= """<!DOCTYPE html>
         <html lang=es>
         <head>
@@ -361,10 +373,73 @@ class AnalizadorLexico:
         </head>
         <body>
         <div align="center" class="topnav"> 
-            <h1 style = "color: black; ">Formulario</h1></div><br></br>"""
+            <h1 style = "color: black; ">Formulario</h1></div><br></br><form>"""
         
-        
-        CuerpoHtml+="""</div>
+        for objeto in ListaAtributos:
+            valor = ''
+            fondo = ''
+            nombre = ''
+            try:
+                for a in objeto.valor:
+                    if a == '"':
+                        pass
+                    else:
+                        valor +=a
+            except:
+                pass
+            try:   
+                for b in objeto.fondo:
+                    if b == '"':
+                        pass
+                    else:
+                        fondo += b
+            except:
+                pass
+            try:
+                for c in objeto.nombre:
+                    if c == '"':
+                        pass
+                    else:
+                        nombre += c
+            except:
+                pass
+            if objeto.tipo == '"etiqueta"':
+                CuerpoHtml+= """<div class="mb-3" align="center">
+                                    <label for="""+str(valor)+""" class="form-label">"""+str(valor) 
+                CuerpoHtml+="""</label></div>"""
+            elif objeto.tipo == '"texto"':
+                CuerpoHtml+= """<div class="mb-3" align="center">
+                                    <input type="text" class="form-control" id="""+str(objeto.valor)+'placeholder='+str(objeto.fondo)+">" 
+                CuerpoHtml+="""</div>"""
+            elif objeto.tipo =='"grupo-radio"':
+                CuerpoHtml+= """<div class="mb-3" align="center">
+                                    <p>"""+str(nombre)+":</p>"
+                CuerpoHtml+= "<p>"
+                for valores in objeto.valores:
+                    CuerpoHtml+=str(valores)+"""<input type="radio" name="""+str(objeto.nombre)+""" /><br />"""
+                CuerpoHtml+="""</p></div>"""
+            elif objeto.tipo =='"grupo-option"':
+                CuerpoHtml+= """<div class="mb-3" align="center">
+                                    <p>"""+str(nombre)+":</p>"
+                CuerpoHtml+= "<p><select>"
+                for valores in objeto.valores:
+                    CuerpoHtml+="<option>"+str(valores)+"</option>"
+                CuerpoHtml+="""</select></p></div>"""
+            elif objeto.tipo == '"boton"':
+                CuerpoHtml+="""<div class="mb-3" align="center">
+                                <button onclick=" """+valor+ '()" id="'+valor+'"'+"""type="submit" class="btn btn-outline-dark">"""+valor+"</button></form></div>"
+                CuerpoHtml+='<iframe id="iframe'+valor+'"> </iframe>'
+                if objeto.evento == "info":
+                    CuerpoHtml += """
+                    <script>
+                        var sendBtn = document.getElementById(" """+valor+'");'
+                    CuerpoHtml+= """var frame = document.getElementById('iframe"""+valor+"')"
+                    CuerpoHtml+= """
+                        sendBtn.addEventListener('click', (event) => {
+                            frame.innerHTML ="""+Entrada1+"})</script>"
+                 
+                
+        CuerpoHtml+="""</form></div>
         </body>
         </html>"""
         ruta = 'Formulario.html'
